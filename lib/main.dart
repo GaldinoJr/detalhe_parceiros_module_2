@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'DotsIndicator.dart';
 
 void main() {
@@ -7,11 +8,9 @@ void main() {
   ));
 }
 
-List details = [
-  "Nós queremos te ajudar a ter uma alimentação saudável todos os dias e contamos com um grande parceiro para isso:  a Zona Cerealista Online.",
-  "Nós queremos te ajudar a ter uma alimentação saudável todos os dias e contamos com um grande parceiro para isso:  a Zona Cerealista Online2.",
-  "Nós queremos te ajudar a ter uma alimentação saudável todos os dias e contamos com um grande parceiro para isso:  a Zona Cerealista Online3."
-];
+// flutter build aar --build-number 3.3.4
+
+
 
 class Screen extends StatefulWidget {
   @override
@@ -19,16 +18,42 @@ class Screen extends StatefulWidget {
 }
 
 class _ScreenState extends State<Screen> {
+  static const plataform = const MethodChannel("channel_galdinao");
+  static const button_text_method = "button_text";
+  String buttonText = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    plataform.setMethodCallHandler((methodCall) {
+      if(methodCall.method == button_text_method){
+        setState(() {
+          buttonText = methodCall.arguments.toString();
+        });
+      }
+      return;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    List details = [
+      "Nós queremos te ajudar a ter uma alimentação saudável todos os dias e contamos com um grande parceiro para isso:  a Zona Cerealista Online.",
+      "Nós queremos te ajudar a ter uma alimentação saudável todos os dias e contamos com um grande parceiro para isso:  a Zona Cerealista Online2.",
+      "Nós queremos te ajudar a ter uma alimentação saudável todos os dias e contamos com um grande parceiro para isso:  a Zona Cerealista Online3."
+    ];
     return Scaffold(
         body: _screenBody(
             'https://firebasestorage.googleapis.com/v0/b/vidalink-static.appspot.com/o/Images%2Fshared%2Fxxxhdpi640dpi-android.png?alt=media&token=6f8fc9a5-762f-4dfa-8985-c2188de828a3',
-            'Confira os produtos'));
+            buttonText,
+            details));
   }
 }
 
-Widget _screenBody(String urlImage, String buttonText) {
+Widget _screenBody(String urlImage, String buttonText, List details) {
   MaterialColor redColor = MaterialColor(0xFFCF2860, redColors);
 
   return Column(children: [
@@ -67,7 +92,7 @@ Widget _screenBody(String urlImage, String buttonText) {
               controller: _controller,
               itemCount: details.length,
               itemBuilder: (_, i) {
-                return pagerDetail(i);
+                return pagerDetail(details[i]);
               },
             ),
             Positioned(
@@ -76,7 +101,7 @@ Widget _screenBody(String urlImage, String buttonText) {
                 right: 0.0,
                 child: Padding(
                     padding: EdgeInsets.fromLTRB(0, 0, 0, 24),
-                    child: generateDotIndicator())),
+                    child: generateDotIndicator(details))),
           ],
         ))
   ]);
@@ -88,7 +113,7 @@ const _kDuration = const Duration(milliseconds: 300);
 const _kCurve = Curves.ease;
 
 
-Widget generateDotIndicator() {
+Widget generateDotIndicator(List details) {
   return DotsIndicator(
     controller: _controller,
     itemCount: details.length,
@@ -104,7 +129,7 @@ Widget generateDotIndicator() {
   );
 }
 
-Widget pagerDetail(int position) {
+Widget pagerDetail(String text) {
   MaterialColor browColor = MaterialColor(0xFF8a8a8a, browColors);
   return Align(
       alignment: Alignment.topCenter,
@@ -127,7 +152,7 @@ Widget pagerDetail(int position) {
                     Expanded(
                         child: SingleChildScrollView(
                             child: Text(
-                              details[position],
+                             text,
                               style: TextStyle(
                                   fontFamily: 'NunitoRegular',
                                   color: browColor,
@@ -189,3 +214,9 @@ Map<int, Color> indicatorColor = {
   800: Color.fromRGBO(122, 186, 192, .9),
   900: Color.fromRGBO(122, 186, 192, 1),
 };
+
+class ScreenArguments {
+  final String buttonText;
+
+  ScreenArguments(this.buttonText);
+}
