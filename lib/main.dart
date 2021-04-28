@@ -1,16 +1,14 @@
+import 'package:detalhe_parceiros_module_2/myMaterialApp.dart';
+import 'package:detalhe_parceiros_module_2/secondscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'DotsIndicator.dart';
 
 void main() {
-  runApp(MaterialApp(
-    home: Screen(),
-  ));
+  runApp(MyMaterialApp());
 }
 
 // flutter build aar --build-number 3.3.4
-
-
 
 class Screen extends StatefulWidget {
   @override
@@ -49,11 +47,11 @@ class _ScreenState extends State<Screen> {
         body: _screenBody(
             'https://firebasestorage.googleapis.com/v0/b/vidalink-static.appspot.com/o/Images%2Fshared%2Fxxxhdpi640dpi-android.png?alt=media&token=6f8fc9a5-762f-4dfa-8985-c2188de828a3',
             buttonText,
-            details));
+            details, context));
   }
 }
 
-Widget _screenBody(String urlImage, String buttonText, List details) {
+Widget _screenBody(String urlImage, String buttonText, List details, BuildContext context) {
   MaterialColor redColor = MaterialColor(0xFFCF2860, redColors);
 
   return Column(children: [
@@ -78,7 +76,13 @@ Widget _screenBody(String urlImage, String buttonText, List details) {
                           ),
                           padding: EdgeInsets.all(12)),
                       onPressed: () {
-                        print('Pressed');
+                        // chamar proxima tela
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => SecondRoute()),
+                        // );
+                        // chamar próxima tela por rota
+                        Navigator.pushNamed(context, '/second');
                       },
                     )))
           ],
