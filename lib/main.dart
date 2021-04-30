@@ -1,5 +1,4 @@
 import 'package:detalhe_parceiros_module_2/myMaterialApp.dart';
-import 'package:detalhe_parceiros_module_2/secondscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'DotsIndicator.dart';
@@ -16,38 +15,44 @@ class Screen extends StatefulWidget {
 }
 
 class _ScreenState extends State<Screen> {
-  static const plataform = const MethodChannel("channel_galdinao");
-  static const button_text_method = "button_text";
+  static const CHANNEL = "CHANNEL_MODULE_PARTNERS";
+  static const METHOD_ARGUMENT = "METHOD_ARGUMENT";
+
+  static const ARG_BUTTON_TEXT = "arg_button_text";
+  static const ARG_IMAGE_URL = "arg_image_url";
+  static const ARG_TEXT_LIST = "arg_text_list";
+
+  static const methodChannel = const MethodChannel(CHANNEL);
   String buttonText = "";
+  List textsDetails = [];
+  String imageUrl = "";
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
-    plataform.setMethodCallHandler((methodCall) {
-      if(methodCall.method == button_text_method){
-        setState(() {
-          buttonText = methodCall.arguments.toString();
-        });
-      }
+    methodChannel.setMethodCallHandler((methodCall) {
+      setState(() {
+        if(methodCall.method == METHOD_ARGUMENT){
+          buttonText = methodCall.arguments(ARG_BUTTON_TEXT);
+          imageUrl = methodCall.arguments(ARG_IMAGE_URL);
+          textsDetails = methodCall.arguments(ARG_TEXT_LIST) as List;
+          //methodChannel.invokeMethod<List<String>>("sadad") as List;
+        }
+      });
       return;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
-    List details = [
-      "Nós queremos te ajudar a ter uma alimentação saudável todos os dias e contamos com um grande parceiro para isso:  a Zona Cerealista Online.",
-      "Nós queremos te ajudar a ter uma alimentação saudável todos os dias e contamos com um grande parceiro para isso:  a Zona Cerealista Online2.",
-      "Nós queremos te ajudar a ter uma alimentação saudável todos os dias e contamos com um grande parceiro para isso:  a Zona Cerealista Online3."
-    ];
+    
     return Scaffold(
         body: _screenBody(
-            'https://firebasestorage.googleapis.com/v0/b/vidalink-static.appspot.com/o/Images%2Fshared%2Fxxxhdpi640dpi-android.png?alt=media&token=6f8fc9a5-762f-4dfa-8985-c2188de828a3',
+            imageUrl,
             buttonText,
-            details, context));
+            textsDetails,
+            context));
   }
 }
 
