@@ -2,6 +2,7 @@ import 'package:detalhe_parceiros_module_2/myMaterialApp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'DotsIndicator.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 void main() {
   runApp(MyMaterialApp());
@@ -34,9 +35,9 @@ class _ScreenState extends State<Screen> {
     methodChannel.setMethodCallHandler((methodCall) {
       setState(() {
         if(methodCall.method == METHOD_ARGUMENT){
-          buttonText = methodCall.arguments(ARG_BUTTON_TEXT);
-          imageUrl = methodCall.arguments(ARG_IMAGE_URL);
-          textsDetails = methodCall.arguments(ARG_TEXT_LIST) as List;
+          buttonText = methodCall.arguments[ARG_BUTTON_TEXT];
+          imageUrl = methodCall.arguments[ARG_IMAGE_URL];
+          textsDetails = methodCall.arguments[ARG_TEXT_LIST] as List;
           //methodChannel.invokeMethod<List<String>>("sadad") as List;
         }
       });
@@ -52,11 +53,11 @@ class _ScreenState extends State<Screen> {
             imageUrl,
             buttonText,
             textsDetails,
-            context));
+            context, methodChannel));
   }
 }
 
-Widget _screenBody(String urlImage, String buttonText, List details, BuildContext context) {
+Widget _screenBody(String urlImage, String buttonText, List details, BuildContext context, MethodChannel methodChannel) {
   MaterialColor redColor = MaterialColor(0xFFCF2860, redColors);
 
   return Column(children: [
@@ -65,7 +66,19 @@ Widget _screenBody(String urlImage, String buttonText, List details, BuildContex
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image(image: NetworkImage(urlImage), fit: BoxFit.cover),
+            CachedNetworkImage(
+              placeholder: (context, url) => Center(
+                child: SizedBox(
+                  width: 40.0,
+                  height: 40.0,
+                  child: new CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(MaterialColor(0xFF048e9a, selectedIndicatorColor)),
+                  ),
+                ),
+              ),
+              imageUrl: urlImage,
+              fit: BoxFit.cover,
+            ),
             Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
@@ -87,7 +100,9 @@ Widget _screenBody(String urlImage, String buttonText, List details, BuildContex
                         //   MaterialPageRoute(builder: (context) => SecondRoute()),
                         // );
                         // chamar próxima tela por rota
-                        Navigator.pushNamed(context, '/second');
+                        // Navigator.pushNamed(context, '/second');
+                        // chamar a parte nativa do android
+                        methodChannel.invokeMethod("method_test");
                       },
                     )))
           ],
