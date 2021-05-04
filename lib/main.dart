@@ -1,8 +1,10 @@
 import 'package:detalhe_parceiros_module_2/myMaterialApp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'DotsIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
 
 void main() {
   runApp(MyMaterialApp());
@@ -22,11 +24,13 @@ class _ScreenState extends State<Screen> {
   static const ARG_BUTTON_TEXT = "arg_button_text";
   static const ARG_IMAGE_URL = "arg_image_url";
   static const ARG_TEXT_LIST = "arg_text_list";
+  static const ARG_PARTNER_URL = "arg_partner_url";
 
   static const methodChannel = const MethodChannel(CHANNEL);
   String buttonText = "";
   List textsDetails = [];
   String imageUrl = "";
+  String partnerUrl = "";
 
   @override
   void initState() {
@@ -38,6 +42,7 @@ class _ScreenState extends State<Screen> {
           buttonText = methodCall.arguments[ARG_BUTTON_TEXT];
           imageUrl = methodCall.arguments[ARG_IMAGE_URL];
           textsDetails = methodCall.arguments[ARG_TEXT_LIST] as List;
+          partnerUrl = methodCall.arguments[ARG_PARTNER_URL];
           //methodChannel.invokeMethod<List<String>>("sadad") as List;
         }
       });
@@ -53,11 +58,21 @@ class _ScreenState extends State<Screen> {
             imageUrl,
             buttonText,
             textsDetails,
-            context, methodChannel));
+            partnerUrl,
+            context));
   }
 }
 
-Widget _screenBody(String urlImage, String buttonText, List details, BuildContext context, MethodChannel methodChannel) {
+_launchURL(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
+  }
+}
+
+
+Widget _screenBody(String urlImage, String buttonText, List details, String partnerUrl, BuildContext context) {
   MaterialColor redColor = MaterialColor(0xFFCF2860, redColors);
 
   return Column(children: [
@@ -102,7 +117,9 @@ Widget _screenBody(String urlImage, String buttonText, List details, BuildContex
                         // chamar próxima tela por rota
                         // Navigator.pushNamed(context, '/second');
                         // chamar a parte nativa do android
-                        methodChannel.invokeMethod("method_test");
+                        // methodChannel.invokeMethod("method_test");
+                        // abrir url
+                        _launchURL(partnerUrl);
                       },
                     )))
           ],
