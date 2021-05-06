@@ -65,7 +65,7 @@ class _ScreenState extends State<Screen> {
 
 _launchURL(String url) async {
   if (await canLaunch(url)) {
-    await launch(url);
+    await launch(url, forceSafariVC: true);
   } else {
     throw 'Could not launch $url';
   }
