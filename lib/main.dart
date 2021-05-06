@@ -65,7 +65,7 @@ class _ScreenState extends State<Screen> {
 
 _launchURL(String url) async {
   if (await canLaunch(url)) {
-    await launch(url);
+    await launch(url, forceWebView: true);
   } else {
     throw 'Could not launch $url';
   }
@@ -81,19 +81,7 @@ Widget _screenBody(String urlImage, String buttonText, List details, String part
         child: Stack(
           fit: StackFit.expand,
           children: [
-            CachedNetworkImage(
-              placeholder: (context, url) => Center(
-                child: SizedBox(
-                  width: 40.0,
-                  height: 40.0,
-                  child: new CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation(MaterialColor(0xFF048e9a, selectedIndicatorColor)),
-                  ),
-                ),
-              ),
-              imageUrl: urlImage,
-              fit: BoxFit.cover,
-            ),
+            Image(image: NetworkImage(urlImage), fit: BoxFit.cover),
             Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
